@@ -78,7 +78,7 @@ export const projects = [
     title: "Laidback London",
     blurb:
       "A full ecommerce build for the footwear brand, extended from two initial page designs into the entire site.",
-    year: "2025",
+    year: "2026",
     role: "Development",
     at: "54 Bit Studios",
     live: "",
@@ -123,7 +123,7 @@ export const projects = [
         ],
       },
       {
-        heading: "What it set out to do",
+        heading: "The aim",
         body: [
           "The aim was to use technology to take pressure off the operation without taking the person out of it.",
         ],
