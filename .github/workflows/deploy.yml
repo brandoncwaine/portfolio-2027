@@ -30,24 +30,30 @@ jobs:
           RAW: ${{ secrets.FTP_SERVER_DIR }}
         run: |
           DIR="${RAW:-/}"
-          # The FTP action requires a trailing slash to treat it as a folder.
+          # Normalize to a trailing slash so the path is unambiguously a directory.
           [ "${DIR%/}" = "$DIR" ] && DIR="$DIR/"
           echo "::add-mask::$DIR"
           echo "path=$DIR" >> "$GITHUB_OUTPUT"
 
+      - name: Install lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
       - name: Upload dist/ to Fasthosts
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          log-level: verbose
-          local-dir: ./dist/
-          server-dir: ${{ steps.dir.outputs.path }}
-          # Keeps a manifest on the server so only changed files upload.
-          state-name: .ftp-deploy-sync-state.json
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          # lftp reads the password from this variable, so it never hits argv.
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          DEST: ${{ steps.dir.outputs.path }}
+        run: |
+          lftp -u "$FTP_USER" --env-password "$FTP_HOST" -e "
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate no;
+            set net:max-retries 5;
+            set net:timeout 20;
+            set net:reconnect-interval-base 5;
+            set ftp:passive-mode true;
+            mirror --reverse --verbose --parallel=1 ./dist/ \"$DEST\";
+            bye
+          "
