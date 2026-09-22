@@ -24,6 +24,17 @@ jobs:
 
       - run: npm run build
 
+      - name: Normalize server dir
+        id: dir
+        env:
+          RAW: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          DIR="${RAW:-/}"
+          # The FTP action requires a trailing slash to treat it as a folder.
+          [ "${DIR%/}" = "$DIR" ] && DIR="$DIR/"
+          echo "::add-mask::$DIR"
+          echo "path=$DIR" >> "$GITHUB_OUTPUT"
+
       - name: Upload dist/ to Fasthosts
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -32,7 +43,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           local-dir: ./dist/
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          server-dir: ${{ steps.dir.outputs.path }}
           # Keeps a manifest on the server so only changed files upload.
           state-name: .ftp-deploy-sync-state.json
           exclude: |

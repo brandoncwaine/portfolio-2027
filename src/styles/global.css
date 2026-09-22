@@ -294,7 +294,29 @@ a.status:active { transform: translateY(0); box-shadow: var(--press); }
 .prose strong { color: var(--text); font-weight: 560; }
 
 /* ── Case study ─────────────────────────────────────────── */
-.case-head .tag { margin-bottom: 16px; }
+/* Breadcrumb row: a way back out, with the project number beside it */
+.case-top { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 15px 7px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--lift-1);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+.back:hover { color: var(--text); transform: translateY(-1px); box-shadow: var(--lift-2); }
+.back:active { transform: translateY(0); box-shadow: var(--press); }
+
+.back .arrow { transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+.back:hover .arrow { transform: translateX(-3px); }
 
 .case-head h1 {
   font-size: clamp(34px, 4.4vw, 48px);

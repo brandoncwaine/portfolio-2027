@@ -16,7 +16,13 @@ const { project, next } = Astro.props;
 <Layout title={project.title} description={project.blurb}>
   <article class="case">
     <header class="hero case-head">
-      <span class="tag">{project.id}</span>
+      <div class="case-top">
+        <a class="back" href="/projects">
+          <span class="arrow" aria-hidden="true">&larr;</span> All projects
+        </a>
+        <span class="tag">{project.id}</span>
+      </div>
+
       <h1>{project.title}</h1>
       <p>{project.blurb}</p>
 
