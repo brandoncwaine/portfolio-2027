@@ -1,0 +1,13 @@
+---
+import { site } from '../data/site.js';
+
+const { active, prefix, org, href } = site.status;
+const Tag = href ? 'a' : 'span';
+---
+
+{active && (
+  <Tag class="status" href={href || undefined}>
+    <span class="dot" aria-hidden="true"></span>
+    <span>{prefix} <strong>{org}</strong></span>
+  </Tag>
+)}

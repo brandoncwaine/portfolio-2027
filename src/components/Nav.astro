@@ -1,0 +1,31 @@
+---
+const pages = [
+  { href: '/',         label: 'Home' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/about',    label: 'About' },
+  { href: '/contact',  label: 'Contact' },
+];
+
+// Normalise so "/projects" and "/projects/" both match
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+---
+
+<nav class="nav">
+  <div class="dock">
+    {/* Transparent layer so the labels can be stacked above the sliding pill */}
+    <div class="dock-labels">
+      {pages.map((page) => {
+        // Case studies live under /projects/<slug>, so keep the Projects
+        // tab lit on those too — otherwise the pill vanishes entirely.
+        const current =
+          page.href === '/' ? path === '/' : path === page.href || path.startsWith(page.href + '/');
+        return (
+          <a href={page.href} aria-current={current ? 'page' : undefined}>
+            {current && <span class="pill" aria-hidden="true"></span>}
+            <span class="label">{page.label}</span>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</nav>

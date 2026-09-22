@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { projects } from '../data/site.js';
+---
+
+<Layout title="Projects" description="Things I have designed and built.">
+  <header class="hero">
+    <h1>Projects</h1>
+    <p>A running list of things I have designed, built, or both.</p>
+  </header>
+
+  <div class="list">
+    {projects.map((project) => <ProjectCard project={project} variant="list" />)}
+  </div>
+</Layout>

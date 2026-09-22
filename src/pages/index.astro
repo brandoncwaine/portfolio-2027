@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Status from '../components/Status.astro';
+import { site, projects } from '../data/site.js';
+
+const featured = projects.slice(0, 3);
+---
+
+<Layout>
+  <header class="hero hero-lead">
+    <Status />
+    <h1>{site.name}</h1>
+    <p>{site.intro}</p>
+
+    <div class="cta">
+      <a class="primary" href="/projects">
+        View work <span class="arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <a class="secondary" href="/contact">Get in touch</a>
+    </div>
+  </header>
+
+  <div class="section-head">
+    <h2>Selected work</h2>
+    <a href="/projects">All projects &rarr;</a>
+  </div>
+
+  <div class="grid">
+    {featured.map((project) => <ProjectCard project={project} />)}
+  </div>
+</Layout>

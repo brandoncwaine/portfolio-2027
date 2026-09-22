@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { projects } from '../../data/site.js';
+
+export function getStaticPaths() {
+  return projects.map((project, i) => ({
+    params: { slug: project.slug },
+    // Wraps back to the first project so the last one is not a dead end
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
+}
+
+const { project, next } = Astro.props;
+---
+
+<Layout title={project.title} description={project.blurb}>
+  <article class="case">
+    <header class="hero case-head">
+      <span class="tag">{project.id}</span>
+      <h1>{project.title}</h1>
+      <p>{project.blurb}</p>
+
+      <dl class="meta">
+        <div><dt>Role</dt><dd>{project.role}</dd></div>
+        <div><dt>Where</dt><dd>{project.at}</dd></div>
+        <div><dt>Year</dt><dd>{project.year}</dd></div>
+      </dl>
+
+      {project.live && (
+        <div class="cta">
+          <a class="primary" href={project.live} target="_blank" rel="noopener">
+            Visit site <span class="arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      )}
+    </header>
+
+    <div class="case-body">
+      {project.sections.map((section) => (
+        <section>
+          <h2>{section.heading}</h2>
+          <div class="text">
+            {section.body.map((para) => <p>{para}</p>)}
+            {section.list && (
+              <ul>{section.list.map((item) => <li>{item}</li>)}</ul>
+            )}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <a class="next" href={`/projects/${next.slug}`}>
+      <span class="tag">Next</span>
+      <div class="body">
+        <h3>{next.title}</h3>
+        <p>{next.blurb}</p>
+      </div>
+      <span class="arrow" aria-hidden="true">&rarr;</span>
+    </a>
+  </article>
+</Layout>

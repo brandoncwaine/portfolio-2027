@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site } from '../data/site.js';
+---
+
+<Layout title="Contact" description="Get in touch.">
+  <header class="hero">
+    <h1>Contact</h1>
+    <p>The quickest way to reach me is email. I read everything.</p>
+  </header>
+
+  <div class="links">
+    {site.links.map((link) => (
+      <a class="btn" href={link.href} rel="me">
+        {link.label}<span>{link.value}</span>
+      </a>
+    ))}
+  </div>
+</Layout>

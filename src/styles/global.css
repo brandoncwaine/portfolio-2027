@@ -1,0 +1,423 @@
+/* ── Tokens ─────────────────────────────────────────────────
+   Flat skeuomorphism: flat fills, no gradients or textures.
+   All the depth comes from three things — a top bevel, a tight
+   contact shadow, and a wide ambient shadow. Press states invert
+   them so surfaces feel like they physically sink.
+   ───────────────────────────────────────────────────────── */
+:root {
+  --bg:        #f5f5f7;
+  --surface:   #ffffff;
+  --surface-2: #ececed;
+  --track:     #e8e8ed;
+
+  --line:      rgba(16, 24, 40, 0.08);
+  --line-soft: rgba(16, 24, 40, 0.05);
+  --bevel:     rgba(255, 255, 255, 0.9);
+
+  --text:      #1d1d1f;
+  --muted:     #6e6e73;
+  --accent:    #0066cc;
+  --live:      #34c759;
+
+  --lift-1: inset 0 1px 0 var(--bevel),
+            0 1px 2px rgba(16, 24, 40, 0.07),
+            0 4px 12px rgba(16, 24, 40, 0.06);
+
+  --lift-2: inset 0 1px 0 var(--bevel),
+            0 2px 4px rgba(16, 24, 40, 0.08),
+            0 14px 28px rgba(16, 24, 40, 0.10);
+
+  --press:  inset 0 2px 4px rgba(16, 24, 40, 0.10),
+            inset 0 0 0 1px rgba(16, 24, 40, 0.04);
+
+  --radius: 16px;
+}
+
+/* ── Base ───────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 16px/1.6 -apple-system, BlinkMacSystemFont, 'SF Pro Text',
+        'Segoe UI', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: inherit; text-decoration: none; }
+
+h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
+h1 { font-size: 40px; font-weight: 640; }
+h2 { font-size: 12px; font-weight: 590; color: var(--muted);
+     text-transform: uppercase; letter-spacing: 0.08em; }
+h3 { font-size: 17px; font-weight: 590; }
+p  { margin: 0; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 96px; }
+
+/* ── Nav dock ───────────────────────────────────────────── */
+.nav { display: flex; justify-content: center; padding: 32px 24px 56px; }
+
+.dock {
+  padding: 6px;
+  border-radius: 999px;
+  background: var(--track);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--press);
+}
+
+.dock-labels {
+  display: flex;
+  gap: 4px;
+  view-transition-name: dock-labels;
+}
+
+.dock a {
+  position: relative;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.dock a:hover { color: var(--text); }
+.dock a[aria-current='page'] { color: var(--text); }
+
+/* The current page sits proud of the recessed track. Lives on its own
+   element so the View Transition can slide it between nav items without
+   stretching the label inside. */
+.dock .pill {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--lift-1);
+  view-transition-name: nav-pill;
+}
+
+.dock .label { position: relative; }
+
+/* ── Status pill ────────────────────────────────────────── */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 22px;
+  padding: 7px 15px 7px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--lift-1);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.status strong { color: var(--text); font-weight: 560; }
+
+/* Only lifts when it is a link */
+a.status:hover { transform: translateY(-1px); box-shadow: var(--lift-2); }
+a.status:active { transform: translateY(0); box-shadow: var(--press); }
+
+.status .dot {
+  position: relative;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--live);
+}
+
+/* The ring that breathes outward */
+.status .dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--live);
+  animation: pulse 2.4s cubic-bezier(0.25, 0.6, 0.35, 1) infinite;
+}
+
+@keyframes pulse {
+  0%        { opacity: 0.55; transform: scale(1); }
+  70%, 100% { opacity: 0;    transform: scale(2.9); }
+}
+
+/* ── Hero ───────────────────────────────────────────────── */
+/* Inner pages: a page header. */
+.hero { margin-bottom: 72px; }
+.hero p { margin-top: 16px; max-width: 34em; font-size: 18px; color: var(--muted); }
+
+/* Homepage: a proper hero. Bigger type, far more air, and a clear
+   gap before the work starts. */
+.hero-lead {
+  padding-top: 48px;
+  margin-bottom: 112px;
+}
+
+.hero-lead .status { margin-bottom: 26px; }
+
+.hero-lead h1 {
+  font-size: clamp(44px, 6.2vw, 72px);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.hero-lead p {
+  margin-top: 26px;
+  max-width: 26em;
+  font-size: clamp(18px, 1.5vw, 21px);
+  line-height: 1.55;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.section-head a { font-size: 14px; color: var(--muted); transition: color 0.15s ease; }
+.section-head a:hover { color: var(--accent); }
+
+/* ── Hero CTAs ──────────────────────────────────────────── */
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+.cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 22px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 550;
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.16s ease;
+}
+
+.cta .primary {
+  background: var(--text);
+  color: var(--bg);
+  border: 1px solid var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18),
+              0 1px 2px rgba(16, 24, 40, 0.18),
+              0 6px 16px rgba(16, 24, 40, 0.16);
+}
+
+.cta .secondary {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--lift-1);
+}
+
+.cta a:hover { transform: translateY(-2px); }
+
+.cta .primary:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18),
+              0 2px 4px rgba(16, 24, 40, 0.2),
+              0 14px 28px rgba(16, 24, 40, 0.22);
+}
+.cta .secondary:hover { box-shadow: var(--lift-2); }
+
+.cta a:active { transform: translateY(1px); box-shadow: var(--press); }
+.cta .primary:active { box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.35); }
+
+.cta .arrow { transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+.cta a:hover .arrow { transform: translateX(3px); }
+
+/* ── Cards ──────────────────────────────────────────────── */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+
+.card {
+  display: block;
+  padding: 22px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--lift-1);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.card:hover { transform: translateY(-3px); box-shadow: var(--lift-2); }
+
+/* Sink on press — the whole point of tactile flat */
+.card:active { transform: translateY(0); box-shadow: var(--press); }
+
+.tag {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-soft);
+  font: 500 11px/1.4 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.card .tag { margin-bottom: 14px; }
+.card p { margin-top: 8px; font-size: 14px; color: var(--muted); }
+
+/* Stacked variant, used on the projects page */
+.list { display: grid; gap: 14px; }
+.list .card { display: flex; align-items: center; gap: 20px; padding: 20px 22px; }
+.list .card .tag { margin: 0; flex-shrink: 0; }
+.list .card .body { flex: 1; }
+.list .card .year { font-size: 13px; color: var(--muted); flex-shrink: 0; }
+
+/* ── Prose ──────────────────────────────────────────────── */
+.prose { max-width: 36em; }
+.prose p { margin-bottom: 18px; font-size: 16.5px; color: var(--muted); }
+.prose strong { color: var(--text); font-weight: 560; }
+
+/* ── Buttons ────────────────────────────────────────────── */
+.links { display: grid; gap: 12px; max-width: 420px; }
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--lift-1);
+  font-size: 15px;
+  font-weight: 500;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn span { font-size: 14px; color: var(--muted); }
+.btn:hover { transform: translateY(-2px); box-shadow: var(--lift-2); }
+.btn:active { transform: translateY(1px); box-shadow: var(--press); }
+
+/* ── Footer ─────────────────────────────────────────────── */
+.foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 80px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ── Page transitions ───────────────────────────────────── */
+/* The nav is snapshotted separately so it holds still while the page
+   content crossfades underneath it. */
+.nav { view-transition-name: nav; }
+
+::view-transition-old(root) {
+  animation: vt-out 180ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Stacking order inside the transition overlay. Named elements are lifted
+   above the root snapshot, so without this the opaque pill would paint over
+   the labels and the text would read as white while it slid. */
+::view-transition-group(nav)         { z-index: 1; }  /* the recessed track */
+::view-transition-group(nav-pill)    { z-index: 2; }  /* the sliding chip   */
+::view-transition-group(dock-labels) { z-index: 3; }  /* text, always on top */
+
+/* A touch of overshoot as the pill settles on the new tab */
+::view-transition-group(nav-pill) {
+  animation-duration: 440ms;
+  animation-timing-function: cubic-bezier(0.34, 1.28, 0.44, 1);
+}
+
+/* The labels do not move between pages — hold them steady so only the
+   active one's colour crossfades. */
+::view-transition-old(dock-labels),
+::view-transition-new(dock-labels) {
+  animation-duration: 260ms;
+}
+
+@keyframes vt-out { to   { opacity: 0; transform: translateY(-6px); } }
+@keyframes vt-in  { from { opacity: 0; transform: translateY(12px); } }
+
+/* ── Entrance ───────────────────────────────────────────── */
+/* fill-mode is `backwards`, not `both` — once the animation is done the
+   transform stops applying, so the hover lifts still work. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+}
+
+.hero-lead .status,
+.hero-lead h1,
+.hero-lead p,
+.hero-lead .cta,
+.section-head,
+.grid .card {
+  animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.hero-lead .status      { animation-delay: 0.04s; }
+.hero-lead h1           { animation-delay: 0.10s; }
+.hero-lead p            { animation-delay: 0.16s; }
+.hero-lead .cta         { animation-delay: 0.22s; }
+.section-head           { animation-delay: 0.30s; }
+.grid .card:nth-child(1) { animation-delay: 0.34s; }
+.grid .card:nth-child(2) { animation-delay: 0.40s; }
+.grid .card:nth-child(3) { animation-delay: 0.46s; }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .wrap { padding: 0 20px 64px; }
+  .nav  { padding: 20px 16px 40px; }
+  .grid { grid-template-columns: 1fr; }
+
+  h1 { font-size: 32px; }
+  .hero { margin-bottom: 52px; }
+  .hero p { font-size: 17px; }
+
+  .hero-lead { padding-top: 20px; margin-bottom: 72px; }
+  .hero-lead .status { margin-bottom: 22px; }
+  .hero-lead p { margin-top: 20px; }
+  .cta { margin-top: 28px; }
+  .cta a { padding: 12px 20px; }
+
+  .dock { padding: 5px; }
+  .dock-labels { gap: 2px; }
+  .dock a { padding: 7px 13px; font-size: 13.5px; }
+
+  .list .card { flex-wrap: wrap; gap: 8px 16px; }
+  .list .card .body { flex-basis: 100%; order: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-group(nav-pill),
+  ::view-transition-group(dock-labels) {
+    animation: none !important;
+    transition: none !important;
+  }
+}
