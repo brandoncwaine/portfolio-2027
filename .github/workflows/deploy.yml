@@ -42,6 +42,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
+          log-level: verbose
           local-dir: ./dist/
           server-dir: ${{ steps.dir.outputs.path }}
           # Keeps a manifest on the server so only changed files upload.
